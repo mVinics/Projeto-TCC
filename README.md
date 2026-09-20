@@ -14,7 +14,7 @@ Isso permitiria responder perguntas como:
 “Existe regra de negócio que não possui teste?”
 “Um endpoint foi removido, mas ainda existem vínculos apontando para ele?”
 
-# Ideia do esqueleto geral:
+### Ideia do esqueleto geral:
 - Spring Boot no backend; <br/>
 - PostgreSQL; <br/>
 - Angular no frontend; <br/>
