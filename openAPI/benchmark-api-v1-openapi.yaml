@@ -1,0 +1,904 @@
+openapi: 3.1.0
+info:
+  title: Order Management Benchmark API
+  version: 1.0.0
+  description: >-
+    API REST de referência para o benchmark de rastreabilidade do TCC. A API modela
+    um fluxo simplificado de pedidos/e-commerce e foi projetada para servir como
+    artefato controlado em experimentos envolvendo regras de negócio, operações REST
+    e casos de teste automatizados.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Ambiente local
+
+tags:
+  - name: Customers
+  - name: Products
+  - name: Coupons
+  - name: Orders
+
+paths:
+  /customers:
+    post:
+      tags: [Customers]
+      operationId: createCustomer
+      summary: Cria um cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreateRequest'
+      responses:
+        '201':
+          description: Cliente criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /customers/{customerId}:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      tags: [Customers]
+      operationId: getCustomer
+      summary: Consulta um cliente
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /customers/{customerId}/status:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    patch:
+      tags: [Customers]
+      operationId: updateCustomerStatus
+      summary: Atualiza o status de um cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerStatusUpdateRequest'
+      responses:
+        '200':
+          description: Status atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /customers/{customerId}/orders:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      tags: [Customers]
+      operationId: getCustomerOrders
+      summary: Lista os pedidos de um cliente
+      responses:
+        '200':
+          description: Pedidos do cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products:
+    post:
+      tags: [Products]
+      operationId: createProduct
+      summary: Cria um produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          description: Produto criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    get:
+      tags: [Products]
+      operationId: listProducts
+      summary: Lista produtos
+      responses:
+        '200':
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /products/{productId}:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    get:
+      tags: [Products]
+      operationId: getProduct
+      summary: Consulta um produto
+      responses:
+        '200':
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{productId}/stock:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    patch:
+      tags: [Products]
+      operationId: updateProductStock
+      summary: Atualiza o estoque de um produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductStockUpdateRequest'
+      responses:
+        '200':
+          description: Estoque atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{productId}/status:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    patch:
+      tags: [Products]
+      operationId: updateProductStatus
+      summary: Atualiza o status de um produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductStatusUpdateRequest'
+      responses:
+        '200':
+          description: Status atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /coupons:
+    post:
+      tags: [Coupons]
+      operationId: createCoupon
+      summary: Cria um cupom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CouponCreateRequest'
+      responses:
+        '201':
+          description: Cupom criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coupon'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /coupons/{code}:
+    parameters:
+      - $ref: '#/components/parameters/CouponCode'
+    get:
+      tags: [Coupons]
+      operationId: getCoupon
+      summary: Consulta um cupom
+      responses:
+        '200':
+          description: Cupom encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coupon'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders:
+    post:
+      tags: [Orders]
+      operationId: createOrder
+      summary: Cria um pedido em estado DRAFT
+      description: Cria um novo pedido para um cliente existente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: Pedido criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [Orders]
+      operationId: getOrder
+      summary: Consulta um pedido
+      responses:
+        '200':
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{orderId}/items:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      operationId: addOrderItem
+      summary: Adiciona um item ao pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemCreateRequest'
+      responses:
+        '200':
+          description: Item adicionado e pedido atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/items/{productId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - $ref: '#/components/parameters/ProductId'
+    patch:
+      tags: [Orders]
+      operationId: updateOrderItem
+      summary: Atualiza a quantidade de um item do pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemUpdateRequest'
+      responses:
+        '200':
+          description: Item atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags: [Orders]
+      operationId: removeOrderItem
+      summary: Remove um item do pedido
+      responses:
+        '200':
+          description: Item removido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/coupons/{code}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - $ref: '#/components/parameters/CouponCode'
+    post:
+      tags: [Orders]
+      operationId: applyCoupon
+      summary: Aplica um cupom ao pedido
+      responses:
+        '200':
+          description: Cupom aplicado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/coupon:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    delete:
+      tags: [Orders]
+      operationId: removeCoupon
+      summary: Remove o cupom aplicado ao pedido
+      responses:
+        '200':
+          description: Cupom removido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/checkout:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      operationId: checkoutOrder
+      summary: Finaliza o carrinho e envia o pedido para pagamento
+      responses:
+        '200':
+          description: Pedido alterado para PENDING_PAYMENT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/payment:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      operationId: payOrder
+      summary: Registra o pagamento de um pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Pagamento registrado e pedido atualizado para PAID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      operationId: cancelOrder
+      summary: Cancela um pedido elegível
+      responses:
+        '200':
+          description: Pedido cancelado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /orders/{orderId}/shipment:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      operationId: shipOrder
+      summary: Cria o envio de um pedido pago
+      responses:
+        '201':
+          description: Envio criado e pedido atualizado para SHIPPED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipmentResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+components:
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CouponCode:
+      name: code
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 40
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    Conflict:
+      description: Operação rejeitada pelo estado atual ou por uma restrição de negócio
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+  schemas:
+    CustomerStatus:
+      type: string
+      enum: [ACTIVE, BLOCKED]
+
+    ProductStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
+
+    CouponStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
+
+    OrderStatus:
+      type: string
+      enum: [DRAFT, PENDING_PAYMENT, PAID, SHIPPED, CANCELLED]
+
+    PaymentStatus:
+      type: string
+      enum: [APPROVED]
+
+    ShipmentStatus:
+      type: string
+      enum: [CREATED]
+
+    CustomerCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 160
+
+    CustomerStatusUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          $ref: '#/components/schemas/CustomerStatus'
+
+    Customer:
+      type: object
+      additionalProperties: false
+      required: [id, name, email, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        status:
+          $ref: '#/components/schemas/CustomerStatus'
+
+    ProductCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [name, price, stock]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        price:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        stock:
+          type: integer
+          minimum: 0
+
+    ProductStockUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [stock]
+      properties:
+        stock:
+          type: integer
+          minimum: 0
+
+    ProductStatusUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+
+    Product:
+      type: object
+      additionalProperties: false
+      required: [id, name, price, stock, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        stock:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+
+    CouponCreateRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - discountAmount
+        - minimumOrderValue
+        - validFrom
+        - validUntil
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        discountAmount:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        minimumOrderValue:
+          type: number
+          format: double
+          minimum: 0
+        validFrom:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+
+    Coupon:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - code
+        - discountAmount
+        - minimumOrderValue
+        - validFrom
+        - validUntil
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        discountAmount:
+          type: number
+          format: double
+        minimumOrderValue:
+          type: number
+          format: double
+        validFrom:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/CouponStatus'
+
+    OrderCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [customerId]
+      properties:
+        customerId:
+          type: string
+          format: uuid
+
+    OrderItemCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+
+    OrderItemUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [quantity]
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+
+    OrderItem:
+      type: object
+      additionalProperties: false
+      required: [productId, productName, quantity, unitPrice, total]
+      properties:
+        productId:
+          type: string
+          format: uuid
+        productName:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        unitPrice:
+          type: number
+          format: double
+        total:
+          type: number
+          format: double
+
+    OrderSummary:
+      type: object
+      additionalProperties: false
+      required: [id, customerId, status, total]
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        total:
+          type: number
+          format: double
+
+    Order:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - customerId
+        - status
+        - items
+        - subtotal
+        - discount
+        - total
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        couponCode:
+          type: [string, 'null']
+        subtotal:
+          type: number
+          format: double
+        discount:
+          type: number
+          format: double
+          minimum: 0
+        total:
+          type: number
+          format: double
+          minimum: 0
+
+    PaymentRequest:
+      type: object
+      additionalProperties: false
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+
+    Payment:
+      type: object
+      additionalProperties: false
+      required: [id, orderId, amount, status, paidAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        paidAt:
+          type: string
+          format: date-time
+
+    PaymentResult:
+      type: object
+      additionalProperties: false
+      required: [payment, order]
+      properties:
+        payment:
+          $ref: '#/components/schemas/Payment'
+        order:
+          $ref: '#/components/schemas/Order'
+
+    Shipment:
+      type: object
+      additionalProperties: false
+      required: [id, orderId, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ShipmentStatus'
+        createdAt:
+          type: string
+          format: date-time
+
+    ShipmentResult:
+      type: object
+      additionalProperties: false
+      required: [shipment, order]
+      properties:
+        shipment:
+          $ref: '#/components/schemas/Shipment'
+        order:
+          $ref: '#/components/schemas/Order'
+
+    ProblemDetails:
+      type: object
+      additionalProperties: false
+      required: [status, code, message, timestamp]
+      properties:
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        code:
+          type: string
+          description: Código estável do erro, sem expor o identificador da regra de negócio.
+          examples: [ORDER_STATE_CONFLICT]
+        message:
+          type: string
+        path:
+          type: [string, 'null']
+        timestamp:
+          type: string
+          format: date-time

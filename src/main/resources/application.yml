@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: benchmark-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/benchmark
+    username: benchmark
+    password: benchmark
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
