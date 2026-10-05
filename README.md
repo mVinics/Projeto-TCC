@@ -21,6 +21,8 @@ Isso permitiria responder perguntas como:
 - Docker; <br/>
 - OpenAPI/Swagger; <br/>
 - JUnit; <br/>
+- Hibernate; <br/>
+
 
 
 
