@@ -32,10 +32,14 @@ class CouponControllerIntegrationTest {
     @Autowired
     private CouponRepository couponRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
     void setUp() {
-        couponRepository.deleteAll();
+        databaseCleaner.clear();
     }
+
 
     @Test
     void shouldCreateCoupon() throws Exception {

@@ -1,5 +1,7 @@
 package com.br.tcc;
 
+import com.br.tcc.order.repository.OrderItemRepository;
+import com.br.tcc.order.repository.OrderRepository;
 import com.br.tcc.TestcontainersConfiguration;
 import com.br.tcc.product.entity.Product;
 import com.br.tcc.product.entity.ProductStatus;
@@ -18,6 +20,8 @@ import java.math.BigDecimal;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
@@ -29,9 +33,12 @@ class ProductControllerIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @BeforeEach
     void setUp() {
-        productRepository.deleteAll();
+        databaseCleaner.clear();
     }
 
     @Test
@@ -182,4 +189,10 @@ class ProductControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("INACTIVE"));
     }
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 }
